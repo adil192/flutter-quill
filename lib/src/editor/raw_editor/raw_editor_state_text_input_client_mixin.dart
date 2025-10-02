@@ -118,9 +118,12 @@ mixin RawEditorStateTextInputClientMixin on EditorState
   }
 
   void _updateComposingRectIfNeeded() {
-    final composingRange = _lastKnownRemoteTextEditingValue?.composing ??
-        textEditingValue.composing;
-    if (hasConnection) {
+    if (!hasConnection) {
+      return;
+    }
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      final composingRange = _lastKnownRemoteTextEditingValue?.composing ??
+          textEditingValue.composing;
       assert(mounted);
       if (composingRange.isValid) {
         final offset = composingRange.start;
@@ -128,13 +131,14 @@ mixin RawEditorStateTextInputClientMixin on EditorState
             renderEditor.getLocalRectForCaret(TextPosition(offset: offset));
         _textInputConnection!.setComposingRect(composingRect);
       }
-      SchedulerBinding.instance
-          .addPostFrameCallback((_) => _updateComposingRectIfNeeded());
-    }
+    });
   }
 
   void _updateCaretRectIfNeeded() {
-    if (hasConnection) {
+    if (!hasConnection) {
+      return;
+    }
+    SchedulerBinding.instance.addPostFrameCallback((_) {
       if (!dirty &&
           renderEditor.selection.isValid &&
           renderEditor.selection.isCollapsed) {
@@ -144,9 +148,7 @@ mixin RawEditorStateTextInputClientMixin on EditorState
             renderEditor.getLocalRectForCaret(currentTextPosition);
         _textInputConnection!.setCaretRect(caretRect);
       }
-      SchedulerBinding.instance
-          .addPostFrameCallback((_) => _updateCaretRectIfNeeded());
-    }
+    });
   }
 
   /// Closes input connection if it's currently open. Otherwise does nothing.
@@ -384,14 +386,15 @@ mixin RawEditorStateTextInputClientMixin on EditorState
   }
 
   void _updateSizeAndTransform() {
-    if (hasConnection) {
+    if (!hasConnection) {
+      return;
+    }
+    SchedulerBinding.instance.addPostFrameCallback((_) {
       // Asking for renderEditor.size here can cause errors if layout hasn't
       // occurred yet. So we schedule a post frame callback instead.
       final size = renderEditor.size;
       final transform = renderEditor.getTransformTo(null);
       _textInputConnection?.setEditableSizeAndTransform(size, transform);
-      SchedulerBinding.instance
-          .addPostFrameCallback((_) => _updateSizeAndTransform());
-    }
+    });
   }
 }
