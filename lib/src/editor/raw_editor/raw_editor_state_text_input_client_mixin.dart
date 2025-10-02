@@ -126,6 +126,8 @@ mixin RawEditorStateTextInputClientMixin on EditorState
           textEditingValue.composing;
       assert(mounted);
       if (composingRange.isValid) {
+        final renderEditor = renderEditorOrNull;
+        if (renderEditor == null) return;
         final offset = composingRange.start;
         final composingRect =
             renderEditor.getLocalRectForCaret(TextPosition(offset: offset));
@@ -139,6 +141,9 @@ mixin RawEditorStateTextInputClientMixin on EditorState
       return;
     }
     SchedulerBinding.instance.addPostFrameCallback((_) {
+      final renderEditor = renderEditorOrNull;
+      if (renderEditor == null) return;
+
       if (!dirty &&
           renderEditor.selection.isValid &&
           renderEditor.selection.isCollapsed) {
@@ -389,9 +394,12 @@ mixin RawEditorStateTextInputClientMixin on EditorState
     if (!hasConnection) {
       return;
     }
+    // Asking for renderEditor.size here can cause errors if layout hasn't
+    // occurred yet. So we schedule a post frame callback instead.
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      // Asking for renderEditor.size here can cause errors if layout hasn't
-      // occurred yet. So we schedule a post frame callback instead.
+      final renderEditor = renderEditorOrNull;
+      if (renderEditor == null) return;
+
       final size = renderEditor.size;
       final transform = renderEditor.getTransformTo(null);
       _textInputConnection?.setEditableSizeAndTransform(size, transform);

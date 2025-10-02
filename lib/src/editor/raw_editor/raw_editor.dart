@@ -82,6 +82,7 @@ abstract class EditorState extends State<QuillRawEditor>
   ScrollController get scrollController;
 
   RenderEditor get renderEditor;
+  RenderEditor? get renderEditorOrNull;
 
   EditorTextSelectionOverlay? get selectionOverlay;
 

@@ -1069,6 +1069,10 @@ class QuillRawEditorState extends EditorState
         _selectionOverlay!.update(textEditingValue);
       }
     } else if (_hasFocus) {
+      final renderEditor = renderEditorOrNull;
+      if (renderEditor == null) {
+        return;
+      }
       _selectionOverlay = EditorTextSelectionOverlay(
         value: textEditingValue,
         context: context,
@@ -1173,8 +1177,10 @@ class QuillRawEditorState extends EditorState
   ///
   /// This property is typically used to notify the renderer of input gestures.
   @override
-  RenderEditor get renderEditor =>
-      _editorKey.currentContext!.findRenderObject() as RenderEditor;
+  RenderEditor get renderEditor => renderEditorOrNull!;
+  @override
+  RenderEditor? get renderEditorOrNull =>
+      _editorKey.currentContext?.findRenderObject() as RenderEditor?;
 
   /// Express interest in interacting with the keyboard.
   ///
