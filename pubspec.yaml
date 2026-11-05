@@ -34,6 +34,8 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+  material_ui: ^1.0.0
+  cupertino_ui: ^1.0.0
 
   dart_quill_delta: ^10.0.0
   collection: ^1.17.0
